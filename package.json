@@ -1,0 +1,23 @@
+{
+  "name": "getting-started",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.4",
+    "eslint": "^8.19.0",
+    "jest": "^28.1.2",
+    "nodemon": "^2.0.19",
+    "supertest": "^6.2.4"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^4.18.1",
+    "sequelize": "^6.21.2",
+    "sqlite3": "^5.0.8"
+  }
+}
