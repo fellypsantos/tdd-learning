@@ -1,0 +1,10 @@
+{
+  "database": {
+    "database": "hoaxify",
+    "username": "",
+    "password": "",
+    "dialect": "sqlite",
+    "storage": "./development.sqlite",
+    "logging": false
+  }
+}
