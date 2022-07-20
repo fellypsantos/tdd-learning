@@ -14,6 +14,13 @@ const columns = {
   password: {
     type: Sequelize.STRING,
   },
+  inactive: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: true,
+  },
+  activationToken: {
+    type: Sequelize.STRING,
+  },
 };
 
 User.init(columns, {
