@@ -1,4 +1,5 @@
 const User = require('../entities/User');
+const MailService = require('../services/MailService');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
@@ -17,6 +18,7 @@ const save = async (body) => {
   };
 
   await User.create(user);
+  await MailService.sendAccountActivation(email, user.activationToken);
 };
 
 const findByEmail = async (email) => {
