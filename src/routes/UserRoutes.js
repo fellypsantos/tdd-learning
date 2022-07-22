@@ -53,8 +53,12 @@ router.post(
       return response.status(400).send({validationErrors: validationErrors});
     }
 
-    await UserService.save(request.body);
-    return response.send({message: 'user created'});
+    try {
+      await UserService.save(request.body);
+      return response.send({message: 'user created'});
+    } catch (err) {
+      return response.status(502).send({message: request.t(err.message)});
+    }
   },
 );
 

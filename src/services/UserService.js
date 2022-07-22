@@ -2,6 +2,8 @@ const User = require('../entities/User');
 const MailService = require('../services/MailService');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const sequelize = require('../config/database');
+const MailException = require('../services/MailException');
 
 const generateToken = (length) => {
   return crypto.randomBytes(length).toString('hex').substring(0, length);
@@ -16,9 +18,16 @@ const save = async (body) => {
     password: hash,
     activationToken: generateToken(16),
   };
+  const transaction = await sequelize.transaction();
+  await User.create(user, {transaction});
 
-  await User.create(user);
-  await MailService.sendAccountActivation(email, user.activationToken);
+  try {
+    await MailService.sendAccountActivation(email, user.activationToken);
+    await transaction.commit();
+  } catch (err) {
+    await transaction.rollback();
+    throw new MailException();
+  }
 };
 
 const findByEmail = async (email) => {

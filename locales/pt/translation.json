@@ -6,5 +6,6 @@
   "password_null": "Senha não pode ser vazia",
   "password_size": "Senha precisa ter pelo menos 6 caracteres",
   "password_pattern": "Senha precisa ter pelo menos 1 letra maiúscula, 1 minúscula e 1 número",
-  "email_inuse": "E-mail já está em uso"
+  "email_inuse": "E-mail já está em uso",
+  "email_failure": "E-mail falhou"
 }

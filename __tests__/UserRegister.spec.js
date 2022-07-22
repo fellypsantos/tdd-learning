@@ -3,6 +3,7 @@ const app = require('../src/app.js');
 const User = require('../src/entities/User');
 const sequelize = require('../src/config/database');
 const nodemailerStub = require('nodemailer-stub');
+const MailService = require('../src/services/MailService');
 
 beforeAll(() => sequelize.sync());
 
@@ -183,6 +184,40 @@ describe('User Registration', () => {
     const savedUser = users[0];
     expect(lastMail.content).toContain(savedUser.activationToken);
   });
+
+  it('should return 500 Bad Gatway when sending email fails', async () => {
+    const mockSendAccountActivation = jest
+      .spyOn(MailService, 'sendAccountActivation')
+      .mockRejectedValue({
+        message: 'Failed to delivery email',
+      });
+    const response = await postUser();
+    expect(response.status).toBe(502);
+    mockSendAccountActivation.mockRestore();
+  });
+
+  it('should return Email failure message when sending email fails', async () => {
+    const mockSendAccountActivation = jest
+      .spyOn(MailService, 'sendAccountActivation')
+      .mockRejectedValue({
+        message: 'Failed to delivery email',
+      });
+    const response = await postUser();
+    expect(response.body.message).toBe('E-mail Failure');
+    mockSendAccountActivation.mockRestore();
+  });
+
+  it('should not save user if activation email fails', async () => {
+    const mockSendAccountActivation = jest
+      .spyOn(MailService, 'sendAccountActivation')
+      .mockRejectedValue({
+        message: 'Failed to delivery email',
+      });
+    await postUser();
+    mockSendAccountActivation.mockRestore();
+    const users = await User.findAll();
+    expect(users.length).toBe(0);
+  });
 });
 
 describe('Internationalization', () => {
@@ -199,6 +234,7 @@ describe('Internationalization', () => {
     password_pattern:
       'Senha precisa ter pelo menos 1 letra maiúscula, 1 minúscula e 1 número',
     email_inuse: 'E-mail já está em uso',
+    email_failure: 'E-mail falhou',
   };
 
   it.each`
@@ -240,5 +276,16 @@ describe('Internationalization', () => {
     const body = response.body;
 
     expect(body.validationErrors.email).toBe(messages.email_inuse);
+  });
+
+  it(`should return ${messages.email_failure} when sending email fails and language is portuguese`, async () => {
+    const mockSendAccountActivation = jest
+      .spyOn(MailService, 'sendAccountActivation')
+      .mockRejectedValue({
+        message: 'Failed to delivery email',
+      });
+    const response = await postUser({...validUser}, {language: 'pt'});
+    mockSendAccountActivation.mockRestore();
+    expect(response.body.message).toBe(messages.email_failure);
   });
 });
